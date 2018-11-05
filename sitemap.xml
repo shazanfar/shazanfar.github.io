@@ -4,7 +4,7 @@
     
     <url>
     
-      <loc>/tutorial/example/</loc>
+      <loc>https://shazanfar.github.io/tutorial/example/</loc>
       <lastmod>2018-09-09T00:00:00+10:00</lastmod>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
     
-      <loc>/tutorial/</loc>
+      <loc>https://shazanfar.github.io/tutorial/</loc>
       <lastmod>2018-09-09T00:00:00+10:00</lastmod>
     </url>
     
@@ -20,15 +20,7 @@
     
     <url>
     
-      <loc>/privacy/</loc>
-      <lastmod>2018-06-28T00:00:00+10:00</lastmod>
-    </url>
-    
-  
-    
-    <url>
-    
-      <loc>/talk/example/</loc>
+      <loc>https://shazanfar.github.io/talk/example/</loc>
       <lastmod>2017-01-01T00:00:00+11:00</lastmod>
     </url>
     
@@ -36,7 +28,7 @@
     
     <url>
     
-      <loc>/post/</loc>
+      <loc>https://shazanfar.github.io/post/</loc>
       <lastmod>2017-01-01T00:00:00+11:00</lastmod>
     </url>
     
@@ -44,7 +36,7 @@
     
     <url>
     
-      <loc>/publication/</loc>
+      <loc>https://shazanfar.github.io/publication/</loc>
       <lastmod>2017-01-01T00:00:00+11:00</lastmod>
     </url>
     
@@ -52,7 +44,7 @@
     
     <url>
     
-      <loc>/talk/</loc>
+      <loc>https://shazanfar.github.io/talk/</loc>
       <lastmod>2017-01-01T00:00:00+11:00</lastmod>
     </url>
     
@@ -60,7 +52,7 @@
     
     <url>
     
-      <loc>/project/external-project/</loc>
+      <loc>https://shazanfar.github.io/project/external-project/</loc>
       <lastmod>2016-04-27T00:00:00+10:00</lastmod>
     </url>
     
@@ -68,7 +60,7 @@
     
     <url>
     
-      <loc>/project/internal-project/</loc>
+      <loc>https://shazanfar.github.io/project/internal-project/</loc>
       <lastmod>2016-04-27T00:00:00+10:00</lastmod>
     </url>
     
@@ -76,7 +68,7 @@
     
     <url>
     
-      <loc>/post/getting-started/</loc>
+      <loc>https://shazanfar.github.io/post/getting-started/</loc>
       <lastmod>2018-01-13T00:00:00+11:00</lastmod>
     </url>
     
@@ -84,7 +76,7 @@
     
     <url>
     
-      <loc>/publication/person-re-id/</loc>
+      <loc>https://shazanfar.github.io/publication/person-re-id/</loc>
       <lastmod>2015-09-01T00:00:00+10:00</lastmod>
     </url>
     
@@ -92,7 +84,7 @@
     
     <url>
     
-      <loc>/post/2015-07-23-r-rmarkdown/</loc>
+      <loc>https://shazanfar.github.io/post/2015-07-23-r-rmarkdown/</loc>
       <lastmod>2015-07-23T21:13:14-05:00</lastmod>
     </url>
     
@@ -100,7 +92,7 @@
     
     <url>
     
-      <loc>/publication/clothing-search/</loc>
+      <loc>https://shazanfar.github.io/publication/clothing-search/</loc>
       <lastmod>2013-07-01T00:00:00+10:00</lastmod>
     </url>
     
@@ -108,7 +100,7 @@
     
     <url>
     
-      <loc>/tags/academic/</loc>
+      <loc>https://shazanfar.github.io/tags/academic/</loc>
       <lastmod>2018-01-13T00:00:00+11:00</lastmod>
       <priority>0</priority>
     </url>
@@ -117,7 +109,7 @@
     
     <url>
     
-      <loc>/categories/</loc>
+      <loc>https://shazanfar.github.io/categories/</loc>
       <priority>0</priority>
     </url>
     
@@ -125,7 +117,7 @@
     
     <url>
     
-      <loc>/tags/deep-learning/</loc>
+      <loc>https://shazanfar.github.io/tags/deep-learning/</loc>
       <lastmod>2016-04-27T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
@@ -134,7 +126,7 @@
     
     <url>
     
-      <loc>/tags/demo/</loc>
+      <loc>https://shazanfar.github.io/tags/demo/</loc>
       <lastmod>2016-04-27T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
@@ -143,7 +135,7 @@
     
     <url>
     
-      <loc>/</loc>
+      <loc>https://shazanfar.github.io/</loc>
       <lastmod>2017-10-15T00:00:00+11:00</lastmod>
       <priority>0</priority>
     </url>
@@ -152,7 +144,7 @@
     
     <url>
     
-      <loc>/project/</loc>
+      <loc>https://shazanfar.github.io/project/</loc>
       <lastmod>2016-04-27T00:00:00+10:00</lastmod>
       <priority>0</priority>
     </url>
@@ -161,7 +153,7 @@
     
     <url>
     
-      <loc>/categories/r/</loc>
+      <loc>https://shazanfar.github.io/categories/r/</loc>
       <lastmod>2015-07-23T21:13:14-05:00</lastmod>
       <priority>0</priority>
     </url>
@@ -170,7 +162,7 @@
     
     <url>
     
-      <loc>/tags/r-markdown/</loc>
+      <loc>https://shazanfar.github.io/tags/r-markdown/</loc>
       <lastmod>2015-07-23T21:13:14-05:00</lastmod>
       <priority>0</priority>
     </url>
@@ -179,7 +171,7 @@
     
     <url>
     
-      <loc>/slides/</loc>
+      <loc>https://shazanfar.github.io/slides/</loc>
       <priority>0</priority>
     </url>
     
@@ -187,14 +179,14 @@
     
     <url>
     
-      <loc>/slides/example-slides/</loc>
+      <loc>https://shazanfar.github.io/slides/example-slides/</loc>
     </url>
     
   
     
     <url>
     
-      <loc>/tags/</loc>
+      <loc>https://shazanfar.github.io/tags/</loc>
       <lastmod>2018-01-13T00:00:00+11:00</lastmod>
       <priority>0</priority>
     </url>
@@ -203,7 +195,7 @@
     
     <url>
     
-      <loc>/tags/plot/</loc>
+      <loc>https://shazanfar.github.io/tags/plot/</loc>
       <lastmod>2015-07-23T21:13:14-05:00</lastmod>
       <priority>0</priority>
     </url>
@@ -212,7 +204,7 @@
     
     <url>
     
-      <loc>/tags/regression/</loc>
+      <loc>https://shazanfar.github.io/tags/regression/</loc>
       <lastmod>2015-07-23T21:13:14-05:00</lastmod>
       <priority>0</priority>
     </url>
