@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on Dr Shila Ghazanfar</title>
+    <title>Categories on Minimal Academic</title>
     <link>https://shazanfar.github.io/categories/</link>
-    <description>Recent content in Categories on Dr Shila Ghazanfar</description>
+    <description>Recent content in Categories on Minimal Academic</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <copyright>&amp;copy; Joshua Hu 2018</copyright>
     
 	<atom:link href="https://shazanfar.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>R</title>
-      <link>https://shazanfar.github.io/categories/r/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>https://shazanfar.github.io/categories/r/</guid>
-      <description></description>
-    </item>
     
   </channel>
 </rss>
