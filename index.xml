@@ -21,5 +21,25 @@
 This bit is about me</description>
     </item>
     
+    <item>
+      <title>About</title>
+      <link>https://shazanfar.github.io/blog/</link>
+      <pubDate>Mon, 05 Nov 2018 00:06:37 +0000</pubDate>
+      
+      <guid>https://shazanfar.github.io/blog/</guid>
+      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.
+This bit is about me</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://shazanfar.github.io/projects/</link>
+      <pubDate>Mon, 05 Nov 2018 00:06:37 +0000</pubDate>
+      
+      <guid>https://shazanfar.github.io/projects/</guid>
+      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.
+This bit is about me</description>
+    </item>
+    
   </channel>
 </rss>
