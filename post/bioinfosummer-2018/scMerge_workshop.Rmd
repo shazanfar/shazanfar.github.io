@@ -1,0 +1,343 @@
+---
+title: "scMerge: R package for merging single cell RNA-Seq datasets"
+author: "Dr Shila Ghazanfar, Ms Yingxin Lin, Mr Kevin Wang"
+date: "6 December 2018"
+output:
+  html_document:
+    code_folding: show
+    number_sections: yes
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: yeti
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+# uncomment below to make it questions instead of solutions
+# knitr::opts_chunk$set(results = "hide", fig.show = "hide")
+options(width = 91)
+```
+
+This workshop is being held at the [BioInfoSummer](https://bis.amsi.org.au/) workshop on 3-7 December 2018.
+
+# Activity Overview
+
+- In this workshop you will be interrogating a mouse embryonic stem cell *data collection*. A data collection is a number of distinct datasets that have some kind of meaningful reason to be combined/merged.
+
+- This data comes from [Kolodziejczyk et al](https://doi.org/10.1016/j.stem.2015.09.011): Kolodziejczyk, A. A. et al. Single Cell RNA-Sequencing of Pluripotent States Unlocks Modular Transcriptional Variation. Cell Stem Cell 17, 471-485 (2015).
+
+- We will cover three main kinds of merging of data: unsupervised, supervised and semi-supervised.
+
+- Have a look at the many [Case Studies](https://sydneybiox.github.io/scMerge/index.html) available on the scMerge website for more examples.
+
+# Links to resources
+
+- [scMerge website](https://sydneybiox.github.io/scMerge/index.html)
+
+- [scMerge vignette and Case Studies](https://sydneybiox.github.io/scMerge/articles/scMerge.html)
+
+- [scMerge preprint](https://www.biorxiv.org/content/early/2018/08/16/393280)
+
+- Yingxin Lin's presentation [slides](https://yingxinlin.github.io/talk/biocasia2018/) at [BioCAsia 2018](https://bioconductor.github.io/BiocAsia/)
+
+- [Analysis of Single Cell Tutorial](https://hemberg-lab.github.io/scRNA.seq.course/), with thanks to Vladimir Kiselev, Tallulah Andrews, Jennifer Westoby, Davis McCarthy, Maren Büttner and Martin Hemberg. 
+
+- [Stephanie Hicks](https://bis.amsi.org.au/stephanie-hicks/)' workshop presented on Tuesday 4 December 2018 at [BioInfoSummer](http://www.stephaniehicks.com/2018-bioinfosummer-scrnaseq)
+
+# scMerge installation
+
+To complete today's workshops, you will need to have R and Rstudio installed on your computer. Before attending the workshop, ensure R is at least version 3.5.0.
+
+To install Bioconductor software, BiocManager must firstly be obtained from CRAN.
+
+```
+# If you need to install Bioconductor software
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+    
+# Some CRAN packages required by scMerge
+install.packages(c("ruv", "rsvd", "igraph", "pdist", "proxy", "foreach", "doSNOW", "distr", "Rcpp", "RcppEigen"))
+devtools::install_github("theislab/kBET")
+
+# Some BioConductor packages required by scMerge
+BiocManager::install(c("SingleCellExperiment", "M3Drop"), version = "3.8")
+
+# Installing scMerge and the data files using
+devtools::install_github("SydneyBioX/scMerge.data")
+devtools::install_github("SydneyBioX/scMerge")
+```
+
+During this workshop you are also likely to use the `ggplot2` package and `scater` package, so load that into your workspace. If you run into errors with loading these packages, see if they are installed on your computer.
+
+```{r, message = FALSE}
+library(ggplot2)
+# if not installed use
+# install.packages("ggplot2")
+
+library(scater)
+# if not installed use
+# BiocManager::install("scater", version = "3.8")
+```
+
+
+# Interrogating mouse embryonic stem cell (ESC) dataset
+
+Load the data from the scMerge.data package
+
+```{r}
+library(scMerge)
+data("sce_mESC", package = "scMerge.data")
+sce_mESC
+class(sce_mESC)
+```
+
+`sce_mESC` is a `SingleCellExperiment` object. This is an S4 object that saves a lot of different pieces of information in the one object. You can browse the methods or functions that can be performed on the SingleCellExperiment object with the `showMethods` function.
+
+```r
+showMethods(classes = "SingleCellExperiment")
+```
+
+
+Have a look at the different pieces of information within this object
+
+```{r}
+dim(sce_mESC) # number of genes and number of cells
+assays(sce_mESC)
+names(colData(sce_mESC))
+table(sce_mESC$batch, sce_mESC$cellTypes)
+```
+
+This data contains `r length(unique(sce_mESC$batch))` batches, and we happen to know it has `r length(unique(sce_mESC$cellTypes))` cell types.
+
+## PCA plot of unmerged data
+
+Using functions from the [scater](https://www.bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/vignette-dataviz.html) package, we can generate a number of informative graphs. The following is calling the `plotPCA` function from within the scater package. We set point colours by cell type and point shapes by batch.
+
+```{r}
+scater::plotPCA(sce_mESC, 
+                colour_by = "cellTypes", 
+                shape_by = "batch")
+```
+
+By default, `plotPCA` pulls data from the 'logcounts' assay. If you wish to change that, you can change the assay within the `run_args` parameter.
+
+```{r}
+names(assays(sce_mESC)) # these are the assays
+
+scater::plotPCA(sce_mESC, 
+                colour_by = "cellTypes", 
+                shape_by = "batch",
+                run_args = list(exprs_values = "counts")) + 
+  labs(title = "counts")
+```
+
+## Running unsupervised scMerge
+
+There are four key arguments to scMerge:  
+
+- sce_combine - the SingleCellExperiment object of interest
+
+- ctl - set of negative control gene names
+
+- kmeansK - an integer vector of length same as the number of batches indicating the number of clusters we expect
+
+- assay_name - the assay name for the scMerged dataset
+
+For this example, we can see the number of cell types per batch, so we can supply a very well-informed kmeansK vector.
+
+Since this is mouse data, we can use preloaded [stably expressed genes](https://www.biorxiv.org/content/early/2018/11/22/229815) in `segList_ensemblGeneID` as negative control genes. These are genes that we have found to be stably expressed across multiple mouse embryonic development time points. 
+
+```{r}
+table(sce_mESC$batch, sce_mESC$cellTypes)
+
+data("segList_ensemblGeneID")
+
+sce_mESC <- scMerge(sce_combine = sce_mESC, 
+                    ctl = segList_ensemblGeneID$mouse$mouse_scSEG,
+                    kmeansK = c(1,3,3,1,1),
+                    assay_name = "scMerge_unsupervised")
+```
+
+We now have have a new assay in our sce_mESC object called scMerge_unsupervised. Note that we also have a network graph generated, this shows the estimated sets of mutual nearest clusters, forming three distinct modules. Also notice that the distinct modules contain four, two and three nodes, corresponding to the batches containing cells for each cell type.
+
+Visualise the scMerged data using plotPCA:
+
+```{r}
+# note there is a new scMerge_unsupervised assay slot
+sce_mESC
+
+scater::plotPCA(sce_mESC, 
+                colour_by = "cellTypes", 
+                shape_by = "batch",
+                run_args = list(exprs_values = "scMerge_unsupervised")) + 
+  labs(title = "scMerge_unsupervised")
+```
+
+### What if I don't know how to select kmeansK?
+
+We found that it's better to *overestimate* kmeansK than to *underestimate* kmeansK. Try with setting `kmeansK = c(5,5,5,5,5)`.
+
+```{r}
+sce_mESC <- scMerge(sce_combine = sce_mESC, 
+                    ctl = segList_ensemblGeneID$mouse$mouse_scSEG,
+                    kmeansK = c(5,5,5,5,5),
+                    assay_name = "scMerge_unsupervised_wrongk")
+
+scater::plotPCA(sce_mESC, 
+                colour_by = "cellTypes", 
+                shape_by = "batch",
+                run_args = list(exprs_values = "scMerge_unsupervised_wrongk")) + 
+  labs(title = "scMerge_unsupervised_wrongk")
+```
+
+The network diagram appears to show four distinct modules, suggesting perhaps it has overestimated the number of cell types present in this data collection.  
+
+Notice that even overestimating the kmeansK vector still does a decent job as far as the PCA plot goes. 
+
+### Plotting Explanatory variables
+
+The `plotExplanatoryVariables` function in scater breaks down the variance associated with each gene into components, and plots these as density plots. Typically we want variability to be explained by biological things, i.e. cell types, and not by technical things, i.e. batch. Let's plot the explanatory variables for both unMerged and scMerged data. (Note this is a ggplot object, so you can add ggplot things to it, e.g. adding labels with `labs`.)
+
+```{r}
+scater::plotExplanatoryVariables(sce_mESC,
+                                 exprs_values = "logcounts", 
+                                 variables = c("batch", "cellTypes")) + 
+  labs(title = "logcounts")
+
+
+scater::plotExplanatoryVariables(sce_mESC,
+                                 exprs_values = "scMerge_unsupervised", 
+                                 variables = c("batch", "cellTypes")) + 
+  labs(title = "scMerge_unsupervised")
+
+scater::plotExplanatoryVariables(sce_mESC,
+                                 exprs_values = "scMerge_unsupervised_wrongk", 
+                                 variables = c("batch", "cellTypes")) + 
+  labs(title = "scMerge_unsupervised_wrongk")
+```
+
+Here we can see that the scMerged data has more genes with higher variance explained by cell type and not batch.
+
+## Running supervised scMerge
+
+Let's say that you have performed separate analysis on these 5 different batches of data, and you are fairly confident that the cell type labels you have assigned to these cells are accurate. But now you would like to combine all these data into a single dataset so that you can perform some further downstream analysis. Can you still use the information from your previous analyses or previous knowledge? With supervised scMerge you can ensure that the prior cell type information is included in the merging process.
+
+With fully supervised scMerge, you do not need to provide the kmeansK argument, as no mutual nearest clusters are estimated. If you do provide kmeansK, it will do nothing.  
+
+(As an aside, if you want to perform merging of data and avoid estimating mutual nearest clusters to identify pseudoreplicates, simply include your replicate information within the cell_type argument.)
+
+```{r}
+sce_mESC <- scMerge(sce_mESC,
+                    ctl = segList_ensemblGeneID$mouse$mouse_scSEG,
+                    assay_name = "scMerge_supervised",
+                    cell_type = sce_mESC$cellTypes)
+
+scater::plotPCA(sce_mESC, 
+                colour_by = "cellTypes", 
+                shape_by = "batch",
+                run_args = list(exprs_values = "scMerge_supervised")) + 
+  labs(title = "scMerge_supervised")
+```
+
+## Running semi-supervised scMerge
+
+Now let's say that there are only a subset of cells that you have prior knowledge about. You can incorporate this information into the scMerge algorithm by providing the cell type labels and noting *which* cells you have this information on.  
+
+For this example, we assume that we are quite sure that the 2i cells are 2i cells, but we don't assume knowledge about the other cells. We do this by setting `cell_type` that includes which are the 2i cells, and also setting `cell_type_inc` as the index values for the 2i cells.  
+
+Note that in this semi-supervised mode you still need to provide a `kmeansK` argument.
+
+```{r}
+sce_mESC <- scMerge(sce_mESC,
+                    ctl = segList_ensemblGeneID$mouse$mouse_scSEG,
+                    kmeansK = c(1,3,3,1,1),
+                    assay_name = "scMerge_semisupervised1",
+                    cell_type = sce_mESC$cellTypes,
+                    cell_type_inc = which(sce_mESC$cellTypes == "2i"))
+
+scater::plotPCA(sce_mESC, 
+                colour_by = "cellTypes", 
+                shape_by = "batch",
+                run_args = list(exprs_values = "scMerge_semisupervised1")) + 
+  labs(title = "scMerge_semisupervised1")
+```
+
+A different type of semi-supervised scMerge is if you provide the cell type labels, but still wish for the groups to be matched using the mutual nearest clusters method.
+
+```{r}
+sce_mESC <- scMerge(sce_mESC,
+                    ctl = segList_ensemblGeneID$mouse$mouse_scSEG,
+                    assay_name = "scMerge_semisupervised2",
+                    cell_type = sce_mESC$cellTypes,
+                    cell_type_match = TRUE)
+
+scater::plotPCA(sce_mESC, 
+                colour_by = "cellTypes", 
+                shape_by = "batch",
+                run_args = list(exprs_values = "scMerge_semisupervised2")) + 
+  labs(title = "scMerge_semisupervised2")
+```
+
+
+## More on stably expressed genes
+
+If you're working with a different organism (e.g. human) you will want to use a different set of genes as negative control genes when merging your data. scMerge provides lists of stably expressed genes for human and mouse, based on microarray, RNA-Seq and scRNA-Seq datasets. These are provided as gene symbols or as ENSEMBL gene IDs.
+
+```{r}
+data("segList")
+str(segList)
+str(segList_ensemblGeneID)
+```
+
+Alternatively, you may want to identify your own set of stably expressed genes. Key assumptions behind this is that the provided data does not have batch effects and covers a wide range of cell types. You can imagine that if you run `scSEGIndex` on a data from a single cell type, a lot of cell type specific markers may be called as stably expressed, while they're not necessarily stably expressed across other cell types.
+
+(Note the following line will not run since exprsMat is not yet defined.)
+
+```
+scSEGIndex(exprsMat, cell_type = NULL, ncore = 1)
+```
+
+# Extension work
+
+## More data
+
+If you have extra time, or want to continue exploring scMerge in your own time, have a look at the other Case Study datasets on the [scMerge](https://sydneybiox.github.io/scMerge/index.html) website. Download the data associated with another case study and explore the data using this lab as inspiration. 
+
+## Fast computation
+
+The RUVIII function in the package `ruv` is great, but slow for the large single-cell data. We have been able to achieve faster computation by introducting the `fastRUVIII` function in `scMerge`. It includes:  
+- randomised SVD algorithm: to obtain a very accurate approximation of the noise structure in the data by performing a partial SVD.
+
+- usage of the package `Rcpp` to speed up the matrix calculation.
+
+- rsvd_prop is a parameter between 0 and 1, controlling the degree of approximations.
+
+We recommend only use this option when the number of cells is large in your single cell data (at least 10,000 cells).
+
+```{r}
+?fastRUVIII
+
+sce_mESC <- scMerge(sce_mESC, 
+                    ctl = segList_ensemblGeneID$mouse$mouse_scSEG,
+                    kmeansK = c(1,3,3,1,1),
+                    assay_name = "scMerge_fast", 
+                    fast_svd = TRUE, 
+                    rsvd_prop = 0.1)
+```
+
+
+# Finish
+
+```{r}
+sessionInfo()
+```
+
